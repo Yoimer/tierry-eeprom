@@ -41,42 +41,79 @@ int ADVmap[] = {0, 1 ,  28  , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 int RPM;
 int previousRPM = 0;
 
+// initializes pickup position
+int PickupPosition = 50;
+
+// initializes char array with a size of 80
+char myString[80] = {};  
+
+
+
 void setup() {
   // initialize serial:
   Serial.begin(9600);
   delay(500);
-  Serial.println(""); Serial.println("Reading values from USB. Enter: rpm , advance");
+  Serial.println(""); 
+  Serial.println("Reading values from USB---------. Enter: rpm , advance");
 }
 
 void loop() {
   // if there's any serial available, read it:
   // La fonction Serial.available() est toujours utilisée pour connaître combien d'octets restent dans le buffer.
   // Celui-ci est limité à 63 octets et si il n'y pas de Serial.read() ou de Serial.parseInt() pour enlever petit à petit les octets, alors il atteindra son maximum. 
-  while (Serial.available() > 0) {
+  // while (Serial.available() > 0) {
 
-    // look for the next valid integer in the incoming serial stream:
-    RPM = Serial.parseInt();
+  //   // look for the next valid integer in the incoming serial stream:
+  //   RPM = Serial.parseInt();
 
-    // do it again:
-    int ADV = Serial.parseInt();
+  //   // do it again:
+  //   int ADV = Serial.parseInt();
 
-    // look for the newline. That's the end of your sentence:
-    if (Serial.read() == '\n') {
-      if (RPM < previousRPM && RPM > 0) {
-         Serial.println("Error!");
-      }
-      else {
-        previousRPM = RPM;
-        Serial.print("RPM:");Serial.println(RPM);
-        Serial.print("ADV:");Serial.println(ADV);
-      }
+  //   // look for the newline. That's the end of your sentence:
+  //   if (Serial.read() == '\n') {
+  //     if (RPM < previousRPM && RPM > 0) {
+  //        Serial.println("Error!");
+  //     }
+  //     else {
+  //       previousRPM = RPM;
+  //       Serial.print("RPM:");
+  //       Serial.println(RPM);
+  //       Serial.print("ADV:");
+  //       Serial.println(ADV);
+  //     }
+  //   }
+
+  //   // Write it down if user type 0,0 or just 0:
+  //   if (RPM == 0) {
+  //     Serial.println("Save.");
+  //     EEPROM.put(0,RPM); // (adr, octet)
+  //   }
+  // }
+
+/////////////////////////////////////////////////////////////////////////////
+    // if there is serial data
+    if(Serial.available() > 0) {
+
+        // initializes index variable
+        static byte index = 0;
+
+        // reads each character from serial buffer
+        char ch = Serial.read();
+
+        // ASCII for newline (\n)
+        if(ch == 10)  
+        {
+            // char array terminator (adds null terminator in array)
+            myString[index] = 0;
+            index = 0;
+            Serial.print(myString);
+            Serial.println();
+        }
+        else
+        {
+            // saves character in array
+            myString[index++] = ch;
+        }
     }
 
-
-    // Write it down if user type 0,0 or just 0:
-    if (RPM == 0) {
-      Serial.println("Save.");
-      EEPROM.put(0,RPM); // (adr, octet)
-    }
-  }
 }
