@@ -41,6 +41,8 @@ int ADVmap[] = {0, 1 ,  28  , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 int RPM;
 int previousRPM = 0;
 
+int i = 1;
+
 // initializes pickup position
 int PickupPosition = 50;
 
@@ -61,7 +63,7 @@ void loop() {
   // La fonction Serial.available() est toujours utilisée pour connaître combien d'octets restent dans le buffer.
   // Celui-ci est limité à 63 octets et si il n'y pas de Serial.read() ou de Serial.parseInt() pour enlever petit à petit les octets, alors il atteindra son maximum. 
 
-  int i = 1;
+
   while (Serial.available() > 0) {
 
     // look for the next valid integer in the incoming serial stream:
@@ -82,13 +84,17 @@ void loop() {
         // Serial.print("ADV:");
         // Serial.println(ADV);
         RPMmap[i] = RPM;
-        Serial.println(RPMmap[i]);
+        // Serial.println(RPMmap[i]);
         ADVmap[i] = ADV;
-        Serial.println(ADVmap[i]);
+        // Serial.println(ADVmap[i]);
+
         i = i + 1;
         RPMmap[i] = 0;
         ADVmap[i] = 0;
-        i = 1;
+
+        for(int j = 0; j <= i; ++j) {
+          Serial.println(RPMmap[j]);
+        }
       }
     }
 
