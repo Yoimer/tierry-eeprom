@@ -79,19 +79,14 @@ void loop() {
       }
       else {
         previousRPM = RPM;
-        // Serial.print("RPM:");
-        // Serial.println(RPM);
-        // Serial.print("ADV:");
-        // Serial.println(ADV);
         RPMmap[i] = RPM;
-        // Serial.println(RPMmap[i]);
         ADVmap[i] = ADV;
-        // Serial.println(ADVmap[i]);
 
         i = i + 1;
         RPMmap[i] = 0;
         ADVmap[i] = 0;
 
+        // shows all acumulated data in RPMmap (it also works for ADVmap, user has just to change RPMmap for ADVmap)
         for(int j = 0; j <= i; ++j) {
           Serial.println(RPMmap[j]);
         }
