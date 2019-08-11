@@ -44,10 +44,9 @@ int previousRPM = 0;
 // initializes pickup position
 int PickupPosition = 50;
 
-// initializes char array with a size of 80
-char myString[80] = {};  
-
-
+// initializes char array with a size of 150
+int RPMmap[150] = {};
+int ADVmap[150] = {};
 
 void setup() {
   // initialize serial:
@@ -61,59 +60,43 @@ void loop() {
   // if there's any serial available, read it:
   // La fonction Serial.available() est toujours utilisée pour connaître combien d'octets restent dans le buffer.
   // Celui-ci est limité à 63 octets et si il n'y pas de Serial.read() ou de Serial.parseInt() pour enlever petit à petit les octets, alors il atteindra son maximum. 
-  // while (Serial.available() > 0) {
 
-  //   // look for the next valid integer in the incoming serial stream:
-  //   RPM = Serial.parseInt();
+  int i = 1;
+  while (Serial.available() > 0) {
 
-  //   // do it again:
-  //   int ADV = Serial.parseInt();
+    // look for the next valid integer in the incoming serial stream:
+    RPM = Serial.parseInt();
 
-  //   // look for the newline. That's the end of your sentence:
-  //   if (Serial.read() == '\n') {
-  //     if (RPM < previousRPM && RPM > 0) {
-  //        Serial.println("Error!");
-  //     }
-  //     else {
-  //       previousRPM = RPM;
-  //       Serial.print("RPM:");
-  //       Serial.println(RPM);
-  //       Serial.print("ADV:");
-  //       Serial.println(ADV);
-  //     }
-  //   }
+    // do it again:
+    int ADV = Serial.parseInt();
 
-  //   // Write it down if user type 0,0 or just 0:
-  //   if (RPM == 0) {
-  //     Serial.println("Save.");
-  //     EEPROM.put(0,RPM); // (adr, octet)
-  //   }
-  // }
-
-/////////////////////////////////////////////////////////////////////////////
-    // if there is serial data
-    if(Serial.available() > 0) {
-
-        // initializes index variable
-        static byte index = 0;
-
-        // reads each character from serial buffer
-        char ch = Serial.read();
-
-        // ASCII for newline (\n)
-        if(ch == 10)  
-        {
-            // char array terminator (adds null terminator in array)
-            myString[index] = 0;
-            index = 0;
-            Serial.print(myString);
-            Serial.println();
-        }
-        else
-        {
-            // saves character in array
-            myString[index++] = ch;
-        }
+    // look for the newline. That's the end of your sentence:
+    if (Serial.read() == '\n') {
+      if (RPM < previousRPM && RPM > 0) {
+         Serial.println("Error!");
+      }
+      else {
+        previousRPM = RPM;
+        // Serial.print("RPM:");
+        // Serial.println(RPM);
+        // Serial.print("ADV:");
+        // Serial.println(ADV);
+        RPMmap[i] = RPM;
+        Serial.println(RPMmap[i]);
+        ADVmap[i] = ADV;
+        Serial.println(ADVmap[i]);
+        i = i + 1;
+        RPMmap[i] = 0;
+        ADVmap[i] = 0;
+        i = 1;
+      }
     }
+
+    // Write it down if user type 0,0 or just 0:
+    if (RPM == 0) {
+      Serial.println("Save.");
+      EEPROM.put(0,RPM); // (adr, octet)
+    }
+  }
 
 }
