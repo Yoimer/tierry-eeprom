@@ -49,11 +49,21 @@ int PickupPosition = 50;
 // initializes char array with a size of 150
 int RPMmap[150] = {};
 int ADVmap[150] = {};
+int TO_EEPROM[150] = {};
+
 
 void setup() {
   // initialize serial:
   Serial.begin(9600);
+  EEPROM.begin(512);
   delay(500);
+
+  // write zeros to EEPROM
+  for(int k = 0; k <= 512; ++k) {
+    EEPROM.write(k, 0);
+  }
+  EEPROM.commit();
+
   Serial.println(""); 
   Serial.println("Reading values from USB---------. Enter: rpm , advance");
 }
@@ -62,7 +72,6 @@ void loop() {
   // if there's any serial available, read it:
   // La fonction Serial.available() est toujours utilisée pour connaître combien d'octets restent dans le buffer.
   // Celui-ci est limité à 63 octets et si il n'y pas de Serial.read() ou de Serial.parseInt() pour enlever petit à petit les octets, alors il atteindra son maximum. 
-
 
   while (Serial.available() > 0) {
 
@@ -86,9 +95,12 @@ void loop() {
         RPMmap[i] = 0;
         ADVmap[i] = 0;
 
-        // shows all acumulated data in RPMmap (it also works for ADVmap, user has just to change RPMmap for ADVmap)
-        for(int j = 0; j <= i; ++j) {
-          Serial.println(RPMmap[j]);
+        // tierry's modification
+        for(int j = 1; j <= i-1; ++j) {
+          Serial.print(RPMmap[j]);
+          Serial.print("rpm = ");
+          Serial.print(ADVmap[j]);
+          Serial.println("deg.");
         }
       }
     }
