@@ -49,8 +49,9 @@ int PickupPosition = 50;
 // initializes char array with a size of 150
 int RPMmap[150] = {};
 int ADVmap[150] = {};
+int SAVE_TO_EEPROM_ODD[150] = {};
+int SAVE_TO_EEPROM_EVEN[150] = {};
 int TO_EEPROM[150] = {};
-
 
 void setup() {
   // initialize serial:
@@ -104,12 +105,38 @@ void loop() {
         }
       }
     }
-
     // Write it down if user type 0,0 or just 0:
     if (RPM == 0) {
       Serial.println("Save.");
-      EEPROM.put(0,RPM); // (adr, octet)
+
+      for (int j = 1; j <= i; ++j) {
+        if(j % 2 != 0) {
+            SAVE_TO_EEPROM_ODD[j] = RPMmap[j];
+            SAVE_TO_EEPROM_ODD[j+1] = ADVmap[j];
+        }
+      }
+
+      for (int j = 1; j <= i; ++j) {
+        if(j % 2 == 0) {
+            SAVE_TO_EEPROM_EVEN[j] = RPMmap[j];
+            SAVE_TO_EEPROM_EVEN[j+1] = ADVmap[j];
+        }
+      }
+
+      int w = 1;
+
+      for (int j = 2; j <= i; ++j) {
+        TO_EEPROM[w] = SAVE_TO_EEPROM_EVEN[j];
+        Serial.println(TO_EEPROM[w]);
+        w = w + 1;
+      }
+
+      for (int j = 1; j <= i; ++j) {
+        TO_EEPROM[w] = SAVE_TO_EEPROM_ODD[j];
+        Serial.println(TO_EEPROM[w]);
+        w = w + 1;
+      }
+      // EEPROM.put(0,RPM); // (adr, octet)
     }
   }
-
 }
