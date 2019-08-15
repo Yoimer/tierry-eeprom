@@ -126,17 +126,22 @@ void loop() {
       int w = 1;
 
       for (int j = 2; j <= i; ++j) {
+        // EEPROM.write(w, SAVE_TO_EEPROM_EVEN[j]);
         TO_EEPROM[w] = SAVE_TO_EEPROM_EVEN[j];
-        Serial.println(TO_EEPROM[w]);
         w = w + 1;
       }
 
       for (int j = 1; j <= i; ++j) {
+        // EEPROM.write(w, SAVE_TO_EEPROM_ODD[j]);
         TO_EEPROM[w] = SAVE_TO_EEPROM_ODD[j];
-        Serial.println(TO_EEPROM[w]);
         w = w + 1;
       }
-      // EEPROM.put(0,RPM); // (adr, octet)
+      // EEPROM.commit();
+
+      Serial.println("Values to be saved on EEPROM----");
+      for (int j = 0; j <= 150; ++j) {
+        Serial.println(TO_EEPROM[j]);
+      }
     }
   }
 }
