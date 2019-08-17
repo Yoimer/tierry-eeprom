@@ -1,46 +1,8 @@
-/*
-  Reading a serial ASCII-encoded string.
-
-In my main CDI Ignition ESP software, I make use of 1 variable and 2 maps:
-
-int PickupPosition = 0;
-int RPMmap[] = {0, 800, 2250, 5000, 0};
-int ADVmap[] = {0, 1 ,  28 ,  28  , 0};
-
-- Maps work by couple: 800 goes with 1,  2250 with 28 , 5000,28 etc
-- 1st and last couples MUST be 0,0 as there are boundaries
-
-I want the customer to insert values into those maps via USB serial connection.Below is the code I wrote (it compile so far)
-
-- User first enter <PickupPosition> (in setup loop I suppose) ie:  50\r\n 
-- then User is supposed to enter some couple of values ( <rpm> <space or comma or semicolomn> <advance>   ie 800,1\r\n
-- RPM MUST be in incremential order , if user enter 1000 after 2000 , a error msg is shown (or the code can order them if it's not too complicated )
-- The number of couple is free , minimum is 2 couples: 
-int RPMmap[] = {0, 800, 5000, 0};
-int ADVmap[] = {0, 1 ,  28  , 0};
-   maximum is 28 couples (+2 zero couples)
-
-- If the user enter letter S (I used "0" in the code because rpm is declare as int), all couples are saved in eeprom and the program leave the loop and close (if possible)
-- If the user enter "E" the code Erase all previously saved values in eeprom (EEPROM.erase)
-
-I also need another function that read the eprom values and fill in the 2 maps like this Pseudo-code:
-
-for i = 0 to 30  {
-  EEPROM.get(i, RPMmap(i))
-  EEPROM.get(i, ADVmap(i))
-  }
-
-The result should then be:  
-int RPMmap[] = {0, 800, 5000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-int ADVmap[] = {0, 1 ,  28  , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-
-*/
 #include <EEPROM.h>
 
 int RPM;
 int previousRPM = 0;
-
+int Address =1;
 int i = 1;
 
 // initializes pickup position
@@ -88,12 +50,15 @@ void loop() {
         //prints and writes directly on eeprom
         Serial.print(RPM);
         Serial.print("rpm = ");
-        EEPROM.write(i, RPM);
-        i = i + 1;
+        EEPROM.put(Address, RPM);
+
+        Address = Address + 4;
+        
         Serial.print(ADV);
-        EEPROM.write(i, ADV);
-        i = i + 1;
+        EEPROM.put(Address, ADV);
         Serial.println("deg.");
+        
+        Address = Address + 4;
       }
     }
     // Write it down if user type 0,0 or just 0:
@@ -104,20 +69,19 @@ void loop() {
       // reads values from eeprom
       readEEPROM();
 
-      //reset i
-      i = 1;
+      //reset Address
+      Address = 1;
     }
   }
 }
 
 void readEEPROM() {
-    for(int i = 0; i <= 512; ++i){
-        value = EEPROM.read(i);
+    for(int Address = 1; Address <= 513; Address=Address+4) {
+        value = EEPROM.get(Address,RPM);
         delay(0.75);
-        Serial.print(i);
+        Serial.print(Address);
         Serial.print("\t");
         Serial.print(value, DEC);
         Serial.println();
     }
-
 }
