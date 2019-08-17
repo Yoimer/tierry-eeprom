@@ -89,59 +89,23 @@ void loop() {
       }
       else {
         previousRPM = RPM;
-        RPMmap[i] = RPM;
-        ADVmap[i] = ADV;
 
+        //prints and writes directly on eeprom
+        Serial.print(RPM);
+        Serial.print("rpm = ");
+        EEPROM.write(i, RPM);
         i = i + 1;
-        RPMmap[i] = 0;
-        ADVmap[i] = 0;
-
-        // tierry's modification
-        for(int j = 1; j <= i-1; ++j) {
-          Serial.print(RPMmap[j]);
-          Serial.print("rpm = ");
-          Serial.print(ADVmap[j]);
-          Serial.println("deg.");
-        }
+        Serial.print(ADV);
+        EEPROM.write(i, ADV);
+        i = i + 1;
+        Serial.println("deg.");
       }
     }
     // Write it down if user type 0,0 or just 0:
     if (RPM == 0) {
       Serial.println("Save.");
-
-      for (int j = 1; j <= i; ++j) {
-        if(j % 2 != 0) {
-            SAVE_TO_EEPROM_ODD[j] = RPMmap[j];
-            SAVE_TO_EEPROM_ODD[j+1] = ADVmap[j];
-        }
-      }
-
-      for (int j = 1; j <= i; ++j) {
-        if(j % 2 == 0) {
-            SAVE_TO_EEPROM_EVEN[j] = RPMmap[j];
-            SAVE_TO_EEPROM_EVEN[j+1] = ADVmap[j];
-        }
-      }
-
-      int w = 1;
-
-      for (int j = 2; j <= i; ++j) {
-        // EEPROM.write(w, SAVE_TO_EEPROM_EVEN[j]);
-        TO_EEPROM[w] = SAVE_TO_EEPROM_EVEN[j];
-        w = w + 1;
-      }
-
-      for (int j = 1; j <= i; ++j) {
-        // EEPROM.write(w, SAVE_TO_EEPROM_ODD[j]);
-        TO_EEPROM[w] = SAVE_TO_EEPROM_ODD[j];
-        w = w + 1;
-      }
-      // EEPROM.commit();
-
-      Serial.println("Values to be saved on EEPROM----");
-      for (int j = 0; j <= 150; ++j) {
-        Serial.println(TO_EEPROM[j]);
-      }
+      // saves directly on eeprm
+      EEPROM.commit();
     }
   }
 }
