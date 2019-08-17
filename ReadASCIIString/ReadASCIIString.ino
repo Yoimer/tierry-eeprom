@@ -47,11 +47,14 @@ int i = 1;
 int PickupPosition = 50;
 
 // initializes char array with a size of 150
-int RPMmap[150] = {};
-int ADVmap[150] = {};
-int SAVE_TO_EEPROM_ODD[150] = {};
-int SAVE_TO_EEPROM_EVEN[150] = {};
-int TO_EEPROM[150] = {};
+// int RPMmap[150] = {};
+// int ADVmap[150] = {};
+// int SAVE_TO_EEPROM_ODD[150] = {};
+// int SAVE_TO_EEPROM_EVEN[150] = {};
+// int TO_EEPROM[150] = {};
+
+
+byte value;
 
 void setup() {
   // initialize serial:
@@ -68,6 +71,17 @@ void setup() {
   Serial.println(""); 
   Serial.println("Reading values from USB---------. Enter: rpm , advance");
 }
+
+// void readEEPROM() {
+//     for(int i = 0; i <= 512; ++i){
+//         value = EEPROM.read(i);
+//         Serial.print(i);
+//         Serial.print("\t");
+//         Serial.print(value, DEC);
+//         Serial.println();
+//     }
+
+// }
 
 void loop() {
   // if there's any serial available, read it:
@@ -104,8 +118,25 @@ void loop() {
     // Write it down if user type 0,0 or just 0:
     if (RPM == 0) {
       Serial.println("Save.");
-      // saves directly on eeprm
+      // saves directly on eeprom
       EEPROM.commit();
+      // reads values from eeprom
+      readEEPROM();
+
+      //reset i
+      i = 1;
     }
   }
+}
+
+void readEEPROM() {
+    for(int i = 0; i <= 512; ++i){
+        value = EEPROM.read(i);
+        delay(0.75);
+        Serial.print(i);
+        Serial.print("\t");
+        Serial.print(value, DEC);
+        Serial.println();
+    }
+
 }
